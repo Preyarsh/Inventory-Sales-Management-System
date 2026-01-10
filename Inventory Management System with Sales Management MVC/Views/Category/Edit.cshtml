@@ -4,13 +4,13 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 
     // UI TEST DATA (REMOVE WHEN API CONNECTED)
-    var category = Model ?? new Inventory_Management_System_with_Sales_Management_MVC.Models.CategoryModel
-    {
-        CategoryId = 1,
-        CategoryName = "Test Category",
-        Description = "This is a dummy description only for UI testing purpose.",
-        IsActive = true
-    };
+    // var category = Model ?? new Inventory_Management_System_with_Sales_Management_MVC.Models.CategoryModel
+    // {
+    //     CategoryId = 1,
+    //     CategoryName = "Test Category",
+    //     Description = "This is a dummy description only for UI testing purpose.",
+    //     IsActive = true
+    // };
 }
 
 <style>
@@ -259,6 +259,12 @@
             background: #e74c3c;
             color: white;
         }
+
+    .validation-message {
+        color: #e74c3c;
+        font-size: 12px;
+        margin-top: 5px;
+    }
 </style>
 
 <!-- PAGE HEADER -->
@@ -267,15 +273,16 @@
     <ul class="breadcrumb">
         <li><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
         <li>/</li>
-        <li><a href="@Url.Action("Index", "Categories")">Categories</a></li>
+        <li><a href="@Url.Action("CategoryList", "Category")">Categories</a></li>
         <li>/</li>
         <li>Edit</li>
     </ul>
 </div>
 
 <div class="form-container">
-    <form id="editCategoryForm">
-
+    <form asp-action="Edit" asp-controller="Category" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="CategoryId"/>
         <!-- CATEGORY INFORMATION -->
         <div class="form-section">
             <div class="section-title">
@@ -292,9 +299,10 @@
                         <i class="fas fa-tag"></i>
                         <input type="text"
                                class="form-control"
-                               value="@category.CategoryName"
+                               asp-for="CategoryName"
                                placeholder="Enter category name" />
                     </div>
+                    <span asp-validation-for="CategoryName" class="validation-message"></span>
                 </div>
             </div>
 
@@ -303,8 +311,9 @@
                 <div class="input-with-icon">
                     <i class="fas fa-align-left"></i>
                     <textarea class="form-control"
-                              maxlength="500">@category.Description</textarea>
+                              maxlength="500"asp-for="Description"></textarea>
                 </div>
+                <span asp-validation-for="Description" class="validation-message"></span>
                 <div class="info-text">
                     Explain what type of products belong to this category.
                 </div>
@@ -320,15 +329,15 @@
 
             <div class="status-toggle">
                 <label class="toggle-switch">
-                    <input type="checkbox" id="statusToggle" @(category.IsActive ? "checked" : "") />
+                    <input type="checkbox" id="statusToggle" asp-for="IsActive"/>
                     <span class="toggle-slider"></span>
                 </label>
 
                 <span class="status-label">
                     Category is
                     <span id="statusText"
-                          class="status-indicator @(category.IsActive ? "status-active" : "status-inactive")">
-                        @(category.IsActive ? "Active" : "Inactive")
+                          class="status-indicator @(Model.IsActive ? "status-active" : "status-inactive")">
+                        @(Model.IsActive ? "Active" : "Inactive")
                     </span>
                 </span>
             </div>
@@ -336,17 +345,17 @@
 
         <!-- FOOTER (EXACT MATCH WITH EDIT USER) -->
         <div class="form-actions">
-            <a href="@Url.Action("Index", "Categories")" class="btn btn-secondary">
+            <a href="@Url.Action("CategoryList", "Category")" class="btn btn-secondary">
                 <i class="fas fa-times"></i>
                 Cancel
             </a>
 
-            <button type="button" class="btn btn-danger" onclick="confirmDelete(@category.CategoryId)">
+            <button type="button" class="btn btn-danger" onclick="confirmDelete(@Model.CategoryId)">
                 <i class="fas fa-trash"></i>
                 Delete Category
             </button>
 
-            <button type="button" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary">
                 <i class="fas fa-save"></i>
                 Save Changes
             </button>
@@ -370,16 +379,20 @@
         }
     });
 
-    function confirmDelete(id) {
+        function confirmDelete(userId) {
         Swal.fire({
             title: 'Are you sure?',
-            text: 'This category will be permanently deleted.',
+            text: "This action cannot be undone. All user data will be permanently deleted.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#e74c3c',
             cancelButtonColor: '#7f8c8d',
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '@Url.Action("Delete", "Category")' + '/' + userId;
+            }
         });
     }
 </script>

@@ -494,7 +494,7 @@
                                 <button class="btn-action btn-view" title="View Details" onclick="viewUser(@user.CategoryId)">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <a href="@Url.Action("Edit", "User", new { id = user.CategoryId })" class="btn-action btn-edit" title="Edit User">
+                                <a href="@Url.Action("Edit", "Category", new { id = user.CategoryId })" class="btn-action btn-edit" title="Edit Category">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <button class="btn-action btn-delete" title="Delete User" onclick="deleteUser(@user.CategoryId, '@user.CategoryName')">

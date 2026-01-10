@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Inventory_Management_System_with_Sales_Management_MVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -164,9 +165,46 @@ namespace Inventory_Management_System_with_Sales_Management_MVC.Controllers
                 }
             }
         }
-        public IActionResult Edit()
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
+            SetAuthHeader();
+            var response = await _httpClient.GetAsync($"{id}");
+            if(!response.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] = "Failed to load category data.";
+                return RedirectToAction("CategoryList");
+            }
+            var json = await response.Content.ReadAsStringAsync();
+            var category = JsonConvert.DeserializeObject<CategoryModel>(json);
+            return View(category);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(CategoryModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            SetAuthHeader();
+
+            var json = JsonConvert.SerializeObject(model);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            // API expects id from model
+            var response = await _httpClient.PutAsync($"{model.CategoryId}", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] = "Failed to update Category";
+                return View(model);
+            }
+
+            TempData["SuccessMessage"] = "Category updated successfully";
+            return RedirectToAction("CategoryList");
+        }
+
     }
 }
