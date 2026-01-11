@@ -40,6 +40,7 @@ builder.Services.AddScoped<ProductRepository>();
 builder.Services.AddScoped<IPasswordResetRepository, PasswordResetRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ProductionRepository>();
+builder.Services.AddScoped<ISalesRepository, SalesRepository>();
 
 
 // 📘 SWAGGER + JWT SUPPORT
