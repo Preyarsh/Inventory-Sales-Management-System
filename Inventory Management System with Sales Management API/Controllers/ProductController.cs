@@ -77,5 +77,11 @@ namespace Inventory_Management_System_with_Sales_Management_API.Controllers
 
             return BadRequest("Failed to delete product");
         }
+        [HttpGet("lookup-for-sales")]
+        public IActionResult LookupForSales()
+        {
+            var products = _productRepository.GetProductsForSales();
+            return Ok(products);
+        }
     }
 }

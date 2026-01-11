@@ -31,5 +31,12 @@
         public decimal CurrentStock { get; set; }
         public bool IsActive { get; set; }
     }
+    public class ProductLookupModel
+    {
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public decimal SalePrice { get; set; }
+        public int AvailableStock { get; set; }
+    }
 
 }

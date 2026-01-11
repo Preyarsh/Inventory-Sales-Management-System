@@ -161,6 +161,31 @@ namespace Inventory_Management_System_with_Sales_Management_API.Data
                 return false;
             }
         }
+        public List<ProductLookupModel> GetProductsForSales()
+        {
+            var list = new List<ProductLookupModel>();
+
+            using SqlConnection con = new SqlConnection(_connectionString);
+
+            using SqlCommand cmd = new SqlCommand("PR_Product_Lookup_ForSales", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            con.Open();
+            using SqlDataReader dr = cmd.ExecuteReader();
+
+            while (dr.Read())
+            {
+                list.Add(new ProductLookupModel
+                {
+                    ProductId = Convert.ToInt32(dr["ProductId"]),
+                    ProductName = dr["ProductName"].ToString(),
+                    SalePrice = Convert.ToDecimal(dr["SalePrice"]),
+                    AvailableStock = Convert.ToInt32(dr["AvailableStock"])
+                });
+            }
+
+            return list;
+        }
 
     }
 }
