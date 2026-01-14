@@ -61,6 +61,7 @@ namespace Inventory_Management_System_with_Sales_Management_API.Data
                         cmd.Parameters.AddWithValue("@ProductId", item.ProductId);
                         cmd.Parameters.AddWithValue("@Quantity", item.Quantity);
                         cmd.Parameters.AddWithValue("@Rate", item.Rate);
+                        cmd.Parameters.AddWithValue("@CreatedBy", model.CreatedBy);
                         cmd.ExecuteNonQuery();
                     }
 
