@@ -41,7 +41,7 @@ builder.Services.AddScoped<IPasswordResetRepository, PasswordResetRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ProductionRepository>();
 builder.Services.AddScoped<ISalesRepository, SalesRepository>();
-
+builder.Services.AddScoped<ISalesOrderRepository, SalesOrderRepository>();
 
 // 📘 SWAGGER + JWT SUPPORT
 builder.Services.AddSwaggerGen(c =>
