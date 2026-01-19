@@ -6,8 +6,8 @@
     public class SaleCreateModel
     {
         public DateTime InvoiceDate { get; set; }
-
-        public string CustomerName { get; set; }
+        public int CustomerId { get; set; }
+        public string? CustomerName { get; set; }
         public string? CustomerMobile { get; set; }
 
         public decimal SubTotal { get; set; }
@@ -42,8 +42,10 @@
         public int SaleId { get; set; }
         public string InvoiceNo { get; set; }
         public DateTime InvoiceDate { get; set; }
-        public string CustomerName { get; set; }
-        public string CustomerMobile { get; set; }
+        public int CustomerId { get; set; }
+
+        public string? CustomerName { get; set; }
+        public string? CustomerMobile { get; set; }
 
         public decimal SubTotal { get; set; }
         public decimal Discount { get; set; }

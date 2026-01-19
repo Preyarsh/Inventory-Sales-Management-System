@@ -13,48 +13,60 @@ namespace Inventory_Management_System_with_Sales_Management_API.Data
             _configuration = configuration;
         }
 
+        private SqlConnection GetConnection()
+            => new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+
+        // ================= CREATE SALE =================
         public int CreateSale(SaleCreateModel model)
         {
-            using SqlConnection con = new SqlConnection(
-                _configuration.GetConnectionString("DefaultConnection"));
-
+            using var con = GetConnection();
             con.Open();
-            SqlTransaction tran = con.BeginTransaction();
+            var tran = con.BeginTransaction();
 
             try
             {
                 // 1️⃣ Generate Invoice No
                 string invoiceNo;
+
                 using (SqlCommand cmd = new SqlCommand("PR_Sales_GenerateInvoiceNo", con, tran))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    invoiceNo = cmd.ExecuteScalar().ToString();
+
+                    SqlParameter outputParam = new SqlParameter("@InvoiceNo", SqlDbType.NVarChar, 50)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+
+                    cmd.Parameters.Add(outputParam);
+
+                    cmd.ExecuteNonQuery();
+
+                    invoiceNo = outputParam.Value.ToString();
                 }
 
-                // 2️⃣ Insert Sale
+                // 2️⃣ Insert Sale (🔥 FIXED → CustomerId)
                 int saleId;
-                using (SqlCommand cmd = new SqlCommand("PR_Sales_Insert", con, tran))
+                using (var cmd = new SqlCommand("PR_Sales_Insert", con, tran))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     cmd.Parameters.AddWithValue("@InvoiceNo", invoiceNo);
                     cmd.Parameters.AddWithValue("@InvoiceDate", model.InvoiceDate);
-                    cmd.Parameters.AddWithValue("@CustomerName", model.CustomerName);
-                    cmd.Parameters.AddWithValue("@CustomerMobile", model.CustomerMobile ?? "");
+                    cmd.Parameters.AddWithValue("@CustomerId", model.CustomerId); // ✅ FIX
                     cmd.Parameters.AddWithValue("@SubTotal", model.SubTotal);
                     cmd.Parameters.AddWithValue("@Discount", model.Discount);
                     cmd.Parameters.AddWithValue("@Tax", model.Tax);
                     cmd.Parameters.AddWithValue("@GrandTotal", model.GrandTotal);
-                    cmd.Parameters.AddWithValue("@PaymentMode", model.PaymentMode ?? "");
+                    cmd.Parameters.AddWithValue("@PaymentMode", model.PaymentMode ?? "Cash");
                     cmd.Parameters.AddWithValue("@CreatedBy", model.CreatedBy);
 
                     saleId = Convert.ToInt32(cmd.ExecuteScalar());
                 }
 
-                // 3️⃣ Insert Items + Stock
+                // 3️⃣ Insert Items
                 foreach (var item in model.Items)
                 {
-                    using (SqlCommand cmd = new SqlCommand("PR_SaleItems_Insert", con, tran))
+                    using (var cmd = new SqlCommand("PR_SaleItems_Insert", con, tran))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@SaleId", saleId);
@@ -65,7 +77,8 @@ namespace Inventory_Management_System_with_Sales_Management_API.Data
                         cmd.ExecuteNonQuery();
                     }
 
-                    using (SqlCommand cmd = new SqlCommand("PR_StockTransaction_Sale", con, tran))
+                    // 4️⃣ Stock Transaction
+                    using (var cmd = new SqlCommand("PR_StockTransaction_Sale", con, tran))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@ProductId", item.ProductId);
@@ -86,18 +99,17 @@ namespace Inventory_Management_System_with_Sales_Management_API.Data
             }
         }
 
+        // ================= SALES LIST =================
         public List<SaleListModel> GetSales()
         {
-            List<SaleListModel> list = new();
+            var list = new List<SaleListModel>();
 
-            using SqlConnection con = new SqlConnection(
-                _configuration.GetConnectionString("DefaultConnection"));
-
-            using SqlCommand cmd = new SqlCommand("PR_Sales_List", con);
+            using var con = GetConnection();
+            using var cmd = new SqlCommand("PR_Sales_List", con);
             cmd.CommandType = CommandType.StoredProcedure;
 
             con.Open();
-            using SqlDataReader dr = cmd.ExecuteReader();
+            using var dr = cmd.ExecuteReader();
             while (dr.Read())
             {
                 list.Add(new SaleListModel
@@ -105,7 +117,7 @@ namespace Inventory_Management_System_with_Sales_Management_API.Data
                     SaleId = Convert.ToInt32(dr["SaleId"]),
                     InvoiceNo = dr["InvoiceNo"].ToString(),
                     InvoiceDate = Convert.ToDateTime(dr["InvoiceDate"]),
-                    CustomerName = dr["CustomerName"].ToString(),
+                    CustomerName = dr["CustomerName"].ToString(), // from JOIN
                     GrandTotal = Convert.ToDecimal(dr["GrandTotal"]),
                     PaymentStatus = dr["PaymentStatus"].ToString(),
                     CreatedBy = dr["CreatedBy"].ToString()
@@ -115,29 +127,28 @@ namespace Inventory_Management_System_with_Sales_Management_API.Data
             return list;
         }
 
+        // ================= INVOICE VIEW =================
         public InvoiceViewModel GetInvoice(int saleId)
         {
-            using SqlConnection con = new SqlConnection(
-                _configuration.GetConnectionString("DefaultConnection"));
-
-            using SqlCommand cmd = new SqlCommand("PR_Sales_GetInvoice", con);
+            using var con = GetConnection();
+            using var cmd = new SqlCommand("PR_Sales_GetInvoice", con);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@SaleId", saleId);
 
             con.Open();
-
-            using SqlDataReader dr = cmd.ExecuteReader();
+            using var dr = cmd.ExecuteReader();
 
             InvoiceViewModel invoice = null;
 
-            // ================= HEADER =================
+            // HEADER
             if (dr.Read())
             {
                 invoice = new InvoiceViewModel
                 {
-                    SaleId = Convert.ToInt32(dr["SaleId"]),
+                    SaleId = saleId,
                     InvoiceNo = dr["InvoiceNo"].ToString(),
                     InvoiceDate = Convert.ToDateTime(dr["InvoiceDate"]),
+                    CustomerId = Convert.ToInt32(dr["CustomerId"]),
                     CustomerName = dr["CustomerName"].ToString(),
                     CustomerMobile = dr["CustomerMobile"].ToString(),
                     SubTotal = Convert.ToDecimal(dr["SubTotal"]),
@@ -150,7 +161,7 @@ namespace Inventory_Management_System_with_Sales_Management_API.Data
                 };
             }
 
-            // ================= ITEMS =================
+            // ITEMS
             if (dr.NextResult())
             {
                 while (dr.Read())
@@ -168,8 +179,5 @@ namespace Inventory_Management_System_with_Sales_Management_API.Data
 
             return invoice;
         }
-
-
     }
-
 }

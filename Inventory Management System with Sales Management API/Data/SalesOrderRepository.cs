@@ -33,8 +33,7 @@ namespace Inventory_Management_System_with_Sales_Management_API.Data
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@OrderNo", model.OrderNo);
                 cmd.Parameters.AddWithValue("@OrderDate", model.OrderDate);
-                cmd.Parameters.AddWithValue("@CustomerName", model.CustomerName);
-                cmd.Parameters.AddWithValue("@CustomerMobile", model.CustomerMobile);
+                cmd.Parameters.AddWithValue("@CustomerId", model.CustomerId);
                 cmd.Parameters.AddWithValue("@SubTotal", model.SubTotal);
                 cmd.Parameters.AddWithValue("@Discount", model.Discount);
                 cmd.Parameters.AddWithValue("@Tax", model.Tax);
@@ -80,13 +79,12 @@ namespace Inventory_Management_System_with_Sales_Management_API.Data
                 OrderNo = r.Field<string>("OrderNo"),
                 OrderDate = r.Field<DateTime>("OrderDate"),
                 CustomerName = r.Field<string>("CustomerName"),
-                CustomerMobile = r.Field<string>("CustomerMobile"),
-                SubTotal = r.Field<decimal>("SubTotal"),
-                Discount = r.Field<decimal>("Discount"),
-                Tax = r.Field<decimal>("Tax"),
+                //SubTotal = r.Field<decimal>("SubTotal"),
+                //Discount = r.Field<decimal>("Discount"),
+                //Tax = r.Field<decimal>("Tax"),
                 GrandTotal = r.Field<decimal>("GrandTotal"),
                 Status = r.Field<string>("Status"),
-                CreatedBy = r.Field<int>("CreatedBy")
+                //CreatedBy = r.Field<int>("CreatedBy")
             }).ToList();
         }
 
@@ -110,6 +108,7 @@ namespace Inventory_Management_System_with_Sales_Management_API.Data
                 SalesOrderId = id,
                 OrderNo = orderRow["OrderNo"].ToString(),
                 OrderDate = Convert.ToDateTime(orderRow["OrderDate"]),
+                CustomerId = Convert.ToInt32(orderRow["CustomerId"]),
                 CustomerName = orderRow["CustomerName"].ToString(),
                 CustomerMobile = orderRow["CustomerMobile"].ToString(),
                 SubTotal = Convert.ToDecimal(orderRow["SubTotal"]),
@@ -117,6 +116,7 @@ namespace Inventory_Management_System_with_Sales_Management_API.Data
                 Tax = Convert.ToDecimal(orderRow["Tax"]),
                 GrandTotal = Convert.ToDecimal(orderRow["GrandTotal"]),
                 Status = orderRow["Status"].ToString(),
+                BillingAddress = orderRow["BillingAddress"].ToString(),
                 CreatedBy = Convert.ToInt32(orderRow["CreatedBy"]),
                 Items = new List<SalesOrderItemModel>()
             };
@@ -168,11 +168,18 @@ namespace Inventory_Management_System_with_Sales_Management_API.Data
             using var con = GetConnection();
             var cmd = new SqlCommand("PR_SalesOrder_ConvertToInvoice", con);
             cmd.CommandType = CommandType.StoredProcedure;
+
             cmd.Parameters.AddWithValue("@SalesOrderId", salesOrderId);
             cmd.Parameters.AddWithValue("@CreatedBy", createdBy);
 
             con.Open();
-            return Convert.ToInt32(cmd.ExecuteScalar());
+
+            using var reader = cmd.ExecuteReader();
+            if (!reader.Read())
+                throw new Exception("Invoice conversion failed");
+
+            return Convert.ToInt32(reader["SaleId"]);
         }
+
     }
 }

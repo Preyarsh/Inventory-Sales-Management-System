@@ -42,6 +42,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ProductionRepository>();
 builder.Services.AddScoped<ISalesRepository, SalesRepository>();
 builder.Services.AddScoped<ISalesOrderRepository, SalesOrderRepository>();
+builder.Services.AddScoped<CustomerRepository>();
 
 // 📘 SWAGGER + JWT SUPPORT
 builder.Services.AddSwaggerGen(c =>
