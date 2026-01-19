@@ -1,0 +1,628 @@
+@model Inventory_Management_System_with_Sales_Management_MVC.Models.CustomerCreateViewModel
+
+@{
+    ViewData["Title"] = "Add New Customer";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .page-header {
+        margin-bottom: 30px;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 8px;
+    }
+
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: #7f8c8d;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .breadcrumb a {
+        color: #D6336C;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+    .breadcrumb a:hover {
+        color: #c2185b;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        padding: 40px;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .form-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #D6336C, #c2185b);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        box-shadow: 0 4px 15px rgba(214, 51, 108, 0.3);
+    }
+
+    .form-icon i {
+        font-size: 36px;
+        color: white;
+    }
+
+    .form-header h2 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 8px;
+    }
+
+    .form-header p {
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+
+    .info-box {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+        padding: 12px 15px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+    }
+
+    .info-box i {
+        color: #0c5460;
+        font-size: 14px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .required {
+        color: #e74c3c;
+        font-size: 16px;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #7f8c8d;
+        font-size: 16px;
+    }
+
+    .form-control {
+        width: 80%;
+        padding: 14px 15px 14px 45px;
+        border: 2px solid #e1e8ed;
+        border-radius: 12px;
+        font-size: 14px;
+        color: #2c3e50;
+        outline: none;
+        transition: all 0.3s;
+        background: white;
+        font-family: inherit;
+    }
+
+    .form-control:focus {
+        border-color: #D6336C;
+        box-shadow: 0 0 0 4px rgba(214, 51, 108, 0.1);
+    }
+
+    .form-control::placeholder {
+        color: #b0b8c1;
+    }
+
+    .form-control-textarea {
+        padding: 12px 15px;
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .validation-message {
+        color: #e74c3c;
+        font-size: 12px;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .validation-message i {
+        font-size: 10px;
+    }
+
+    .help-text {
+        font-size: 12px;
+        color: #7f8c8d;
+        margin-top: 6px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-row.full {
+        grid-template-columns: 1fr;
+    }
+
+    .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .status-group {
+        background: #f5f6fa;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 25px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .status-label {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .status-label h4 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0 0 4px 0;
+    }
+
+    .status-label p {
+        font-size: 12px;
+        color: #7f8c8d;
+        margin: 0;
+    }
+
+    .toggle-switch {
+        position: relative;
+        width: 50px;
+        height: 28px;
+        background-color: #D6336C;
+        border-radius: 14px;
+        cursor: pointer;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-switch::after {
+        content: "";
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        background-color: white;
+        border-radius: 50%;
+        top: 2px;
+        right: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-switch.off {
+        background-color: #ddd;
+    }
+
+    .toggle-switch.off::after {
+        right: auto;
+        left: 2px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 35px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 14px 30px;
+        border-radius: 50px;
+        border: none;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #D6336C, #c2185b);
+        color: white;
+        box-shadow: 0 4px 15px rgba(214, 51, 108, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(214, 51, 108, 0.4);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+    .btn-secondary {
+        background: #f5f6fa;
+        color: #2c3e50;
+    }
+
+    .btn-secondary:hover {
+        background: #e1e8ed;
+    }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideDown 0.3s ease;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 25px;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .status-group {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="page-title">Add New Customer</h1>
+    <ul class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+        <li>/</li>
+        <li><a href="@Url.Action("Index", "Customer")">Customers</a></li>
+        <li>/</li>
+        <li>Add New</li>
+    </ul>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i>
+        <span>@TempData["SuccessMessage"]</span>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>@TempData["ErrorMessage"]</span>
+    </div>
+}
+
+<div class="form-container">
+    <div class="form-header">
+        <div class="form-icon">
+            <i class="fas fa-user-tie"></i>
+        </div>
+        <h2>Create New Customer</h2>
+        <p>Fill in the details below to add a new customer to the system</p>
+    </div>
+
+    <div class="info-box">
+        <i class="fas fa-info-circle"></i>
+        <span>All fields marked with <span class="required">*</span> are required</span>
+    </div>
+
+    <form asp-action="Create" asp-controller="Customer" method="post" id="createCustomerForm">
+        <!-- Personal Information -->
+        <h3 class="section-title">
+            <i class="fas fa-id-card"></i> Personal Information
+        </h3>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>
+                    Customer Name <span class="required">*</span>
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user input-icon"></i>
+                    <input asp-for="CustomerName" class="form-control" placeholder="Enter customer name" required autofocus />
+                </div>
+                <span asp-validation-for="CustomerName" class="validation-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Email Address <span class="required">*</span>
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input asp-for="Email" type="email" class="form-control" placeholder="customer@example.com" required />
+                </div>
+                <span asp-validation-for="Email" class="validation-message"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>
+                    Mobile Number <span class="required">*</span>
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-phone input-icon"></i>
+                    <input asp-for="CustomerMobile" class="form-control" placeholder="Enter mobile number" required />
+                </div>
+                <span asp-validation-for="CustomerMobile" class="validation-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    GST Number
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-receipt input-icon"></i>
+                    <input asp-for="GstNumber" class="form-control" placeholder="e.g., 24ABCDE1234F1Z5" />
+                </div>
+                <div class="help-text">Enter GST number if applicable (optional)</div>
+                <span asp-validation-for="GstNumber" class="validation-message"></span>
+            </div>
+        </div>
+
+        <!-- Address Information -->
+        <h3 class="section-title">
+            <i class="fas fa-map-marker-alt"></i> Address Information
+        </h3>
+
+        <div class="form-group form-row full">
+            <div>
+                <label>
+                    Billing Address <span class="required">*</span>
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-home input-icon"></i>
+                    <textarea asp-for="BillingAddress" class="form-control form-control-textarea" placeholder="Enter complete billing address" required></textarea>
+                </div>
+                <span asp-validation-for="BillingAddress" class="validation-message"></span>
+            </div>
+        </div>
+
+        <div class="form-group form-row full">
+            <div>
+                <label>
+                    Shipping Address <span class="required">*</span>
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-truck input-icon"></i>
+                    <textarea asp-for="ShippingAddress" class="form-control form-control-textarea" placeholder="Enter complete shipping address" required></textarea>
+                </div>
+                <span asp-validation-for="ShippingAddress" class="validation-message"></span>
+            </div>
+        </div>
+
+        <!-- Status -->
+        <div class="status-group">
+            <div class="status-label">
+                <h4><i class="fas fa-toggle-on" style="color: #D6336C;"></i> Active Status</h4>
+                <p>Enable or disable this customer</p>
+            </div>
+            <button type="button" class="toggle-switch" id="statusToggle"></button>
+            <input type="hidden" id="isActiveInput" asp-for="IsActive" />
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <a href="@Url.Action("Index", "Customer")" class="btn btn-secondary">
+                <i class="fas fa-times"></i>
+                Cancel
+            </a>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                <i class="fas fa-save"></i>
+                Create Customer
+            </button>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@{
+    if (TempData["SuccessMessage"] != null)
+    {
+        var msgJson = System.Text.Json.JsonSerializer.Serialize(TempData["SuccessMessage"]?.ToString() ?? "");
+        var redirectUrl = Url.Action("Index", "Customer") ?? "/";
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Success!',
+                    text: @Html.Raw(msgJson),
+                    icon: 'success',
+                    confirmButtonColor: '#D6336C',
+                    timer: 2000
+                }).then(function() {
+                    window.location.href = '@redirectUrl';
+                });
+            });
+        </script>
+    }
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+<script>
+    // Initialize toggle switch
+    const toggle = document.getElementById('statusToggle');
+    const isActiveInput = document.getElementById('isActiveInput');
+
+    // Set initial state
+    toggle.classList.add('toggle-switch');
+    isActiveInput.value = 'true';
+
+    // Toggle functionality
+    toggle.addEventListener('click', function() {
+        this.classList.toggle('off');
+        const isActive = !this.classList.contains('off');
+        isActiveInput.value = isActive;
+    });
+
+    // Form validation
+    const createForm = document.getElementById('createCustomerForm');
+    if (createForm) {
+        createForm.addEventListener('submit', function (e) {
+            const customerName = document.querySelector('input[name="CustomerName"]').value.trim();
+            const email = document.querySelector('input[name="Email"]').value.trim();
+            const mobile = document.querySelector('input[name="CustomerMobile"]').value.trim();
+            const billingAddress = document.querySelector('textarea[name="BillingAddress"]').value.trim();
+            const shippingAddress = document.querySelector('textarea[name="ShippingAddress"]').value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Invalid Email!',
+                    text: 'Please enter a valid email address.',
+                    icon: 'error',
+                    confirmButtonColor: '#D6336C'
+                });
+                return false;
+            }
+
+            // Validate mobile format (basic validation)
+            const mobileRegex = /^[0-9]{10}$/;
+            if (!mobileRegex.test(mobile.replace(/[-\s]/g, ''))) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Invalid Mobile!',
+                    text: 'Please enter a valid 10-digit mobile number.',
+                    icon: 'error',
+                    confirmButtonColor: '#D6336C'
+                });
+                return false;
+            }
+
+            // Validate addresses
+            if (!billingAddress || billingAddress.length < 10) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Invalid Address!',
+                    text: 'Billing address must be at least 10 characters long.',
+                    icon: 'error',
+                    confirmButtonColor: '#D6336C'
+                });
+                return false;
+            }
+
+            if (!shippingAddress || shippingAddress.length < 10) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Invalid Address!',
+                    text: 'Shipping address must be at least 10 characters long.',
+                    icon: 'error',
+                    confirmButtonColor: '#D6336C'
+                });
+                return false;
+            }
+
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Customer...';
+            submitBtn.disabled = true;
+        });
+    }
+
+
+</script>

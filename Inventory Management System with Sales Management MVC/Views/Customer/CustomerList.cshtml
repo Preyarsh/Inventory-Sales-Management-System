@@ -1,0 +1,685 @@
+﻿@model IEnumerable<Inventory_Management_System_with_Sales_Management_MVC.Models.CustomerModel>
+
+@{
+    ViewData["Title"] = "Customer Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .main-content {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-add {
+        background: linear-gradient(135deg, #D6336C 0%, #c2185b 100%);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 50px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(214, 51, 108, 0.3);
+    }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(214, 51, 108, 0.4);
+            color: white;
+        }
+
+    .btn-export {
+        background: white;
+        color: #27ae60;
+        border: 2px solid #27ae60;
+        padding: 12px 25px;
+        border-radius: 50px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+        .btn-export:hover {
+            background: #27ae60;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .search-filter-bar {
+        background: white;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .search-box {
+        flex: 1;
+        min-width: 250px;
+        position: relative;
+    }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #e1e8ed;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+            .search-box input:focus {
+                border-color: #D6336C;
+                box-shadow: 0 0 0 3px rgba(214, 51, 108, 0.1);
+            }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+
+    .filter-select {
+        padding: 12px 20px;
+        border: 1px solid #e1e8ed;
+        border-radius: 10px;
+        outline: none;
+        transition: all 0.3s;
+        min-width: 250px;
+        max-width: 400px;
+        width: 100%;
+    }
+
+        .filter-select:focus {
+            border-color: #D6336C;
+            box-shadow: 0 0 0 3px rgba(214, 51, 108, 0.1);
+        }
+
+    .customer-table-container {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        overflow-x: auto;
+        max-width: 100%;
+    }
+
+    .customer-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1200px;
+    }
+
+        .customer-table thead {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+        }
+
+        .customer-table th {
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #D6336C;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .customer-table tbody tr {
+            border-bottom: 1px solid #f5f6fa;
+            transition: all 0.3s;
+        }
+
+            .customer-table tbody tr:hover {
+                background: #fce4ec;
+                transform: scale(1.01);
+            }
+
+        .customer-table td {
+            padding: 18px 15px;
+            color: #2c3e50;
+            vertical-align: middle;
+        }
+
+    .customer-avatar-cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .customer-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #D6336C, #c2185b);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    .customer-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .customer-name {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 4px;
+    }
+
+    .customer-mobile {
+        font-size: 13px;
+        color: #7f8c8d;
+    }
+
+    .customer-email {
+        font-size: 13px;
+        color: #7f8c8d;
+    }
+
+    .customer-address {
+        font-size: 13px;
+        color: #7f8c8d;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .gst-number {
+        font-family: 'Courier New', monospace;
+        font-weight: 500;
+        color: #2c3e50;
+        font-size: 13px;
+    }
+
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .status-active {
+        background: #e8f5e9;
+        color: #27ae60;
+    }
+
+    .status-inactive {
+        background: #ffebee;
+        color: #e74c3c;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-action {
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-view {
+        background: #e3f2fd;
+        color: #2196F3;
+    }
+
+        .btn-view:hover {
+            background: #2196F3;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .btn-edit {
+        background: #fff3e0;
+        color: #FF9800;
+    }
+
+        .btn-edit:hover {
+            background: #FF9800;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .btn-delete {
+        background: #ffebee;
+        color: #e74c3c;
+    }
+
+        .btn-delete:hover {
+            background: #e74c3c;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .pagination-container {
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        border-top: 1px solid #f5f6fa;
+    }
+
+    .pagination-info {
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 8px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-item {
+        display: flex;
+    }
+
+    .page-link {
+        padding: 8px 14px;
+        border: 1px solid #e1e8ed;
+        border-radius: 8px;
+        color: #2c3e50;
+        text-decoration: none;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+
+        .page-link:hover {
+            background: #fce4ec;
+            color: #D6336C;
+            border-color: #D6336C;
+        }
+
+    .page-item.active .page-link {
+        background: linear-gradient(135deg, #D6336C, #c2185b);
+        color: white;
+        border-color: #D6336C;
+    }
+
+    .page-item.disabled .page-link {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+        .stat-icon.total {
+            background: #fce4ec;
+            color: #D6336C;
+        }
+
+        .stat-icon.active {
+            background: #e8f5e9;
+            color: #27ae60;
+        }
+
+        .stat-icon.inactive {
+            background: #ffebee;
+            color: #e74c3c;
+        }
+
+    .stat-info h3 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .stat-info p {
+        font-size: 13px;
+        color: #7f8c8d;
+        margin: 0;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #7f8c8d;
+    }
+
+        .empty-state i {
+            font-size: 64px;
+            color: #e1e8ed;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+    @@media (max-width: 768px) {
+        .page-header
+
+    {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .header-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .btn-add, .btn-export {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .search-filter-bar {
+        flex-direction: column;
+    }
+
+    .search-box, .filter-select {
+        width: 100%;
+    }
+
+    .customer-address {
+        max-width: 150px;
+    }
+
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="page-title">Customer Management</h1>
+    <div class="header-actions">
+        <a class="btn-export" href="@Url.Action("ExportCustomersToExcel", "Customer")">
+            <i class="fas fa-file-excel"></i>
+            Export to Excel
+        </a>
+        <a href="@Url.Action("AddCustomer", "Customer")" class="btn-add">
+            <i class="fas fa-plus"></i>
+            Add New Customer
+        </a>
+    </div>
+</div>
+
+<!-- Search and Filter Bar -->
+<div class="search-filter-bar">
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search by name, email, or mobile..." />
+    </div>
+    <select class="filter-select" id="statusFilter">
+        <option value="">All Status</option>
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+    </select>
+</div>
+
+<!-- Customer Table -->
+<div class="customer-table-container">
+    @if (Model != null && Model.Any())
+    {
+        <table class="customer-table">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Billing Address</th>
+                    <th>Shipping Address</th>
+                    <th>GST Number</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="customerTableBody">
+                @foreach (var customer in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="customer-avatar-cell">
+                                <div class="customer-avatar">
+                                    @(customer.CustomerName?.Substring(0, 2).ToUpper() ?? "NA")
+                                </div>
+                                <div class="customer-info">
+                                    <div class="customer-name">@customer.CustomerName</div>
+                                    <div class="customer-mobile">@customer.CustomerMobile</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="customer-email">@customer.Email</div>
+                        </td>
+                        <td>
+                            <span>@customer.CustomerMobile</span>
+                        </td>
+                        <td>
+                            <span class="customer-address" title="@customer.BillingAddress">@customer.BillingAddress</span>
+                        </td>
+                        <td>
+                            <span class="customer-address" title="@customer.ShippingAddress">@customer.ShippingAddress</span>
+                        </td>
+                        <td>
+                            <span class="gst-number">@customer.GstNumber</span>
+                        </td>
+                        <td>
+                            <span class="status-badge @(customer.IsActive ? "status-active" : "status-inactive")">
+                                @(customer.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action btn-view" title="View Details" onclick="viewCustomer(@customer.CustomerId)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <a href="@Url.Action("Edit", "Customer", new { id = customer.CustomerId })" class="btn-action btn-edit" title="Edit Customer">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn-action btn-delete" title="Delete Customer" onclick="deleteCustomer(@customer.CustomerId, '@customer.CustomerName')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination-container">
+            <div class="pagination-info">
+                Showing @ViewBag.StartRecord to @ViewBag.EndRecord of @ViewBag.TotalRecords customers
+            </div>
+            <ul class="pagination">
+                <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="?page=@(ViewBag.CurrentPage - 1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                        <a class="page-link" href="?page=@i">@i</a>
+                    </li>
+                }
+                <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="?page=@(ViewBag.CurrentPage + 1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="fas fa-users"></i>
+            <h3>No Customers Found</h3>
+            <p>Start by adding your first customer to the system.</p>
+        </div>
+    }
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        filterTable();
+    });
+
+    // Filter functionality
+    document.getElementById('statusFilter').addEventListener('change', function() {
+        filterTable();
+    });
+
+    function filterTable() {
+        var searchValue = document.getElementById('searchInput').value.toLowerCase();
+        var statusValue = document.getElementById('statusFilter').value.toLowerCase();
+        var table = document.getElementById('customerTableBody');
+        var rows = table.getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            var nameCell = row.querySelector('.customer-name').textContent.toLowerCase();
+            var emailCell = row.cells[1].textContent.toLowerCase();
+            var mobileCell = row.cells[2].textContent.toLowerCase();
+            var statusCell = row.querySelector('.status-badge').textContent.toLowerCase();
+
+            var matchesSearch = nameCell.includes(searchValue) ||
+                              emailCell.includes(searchValue) ||
+                              mobileCell.includes(searchValue);
+            var matchesStatus = statusValue === '' || statusCell.includes(statusValue);
+
+            if (matchesSearch && matchesStatus) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    }
+
+    // View customer details
+    function viewCustomer(customerId) {
+        window.location.href = '@Url.Action("Details", "Customer")' + '/' + customerId;
+    }
+
+    // Delete customer with confirmation
+    function deleteCustomer(customerId, customerName) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to delete customer: " + customerName + "?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#D6336C',
+            cancelButtonColor: '#7f8c8d',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Call delete API or form submit
+                fetch('@Url.Action("Delete", "Customer")' + '/' + customerId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Customer has been deleted successfully.',
+                            icon: 'success',
+                            confirmButtonColor: '#D6336C'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: data.message || 'Failed to delete customer.',
+                            icon: 'error',
+                            confirmButtonColor: '#D6336C'
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An error occurred while deleting the customer.',
+                        icon: 'error',
+                        confirmButtonColor: '#D6336C'
+                    });
+                });
+            }
+        });
+    }
+</script>
